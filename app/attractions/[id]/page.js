@@ -1,0 +1,34 @@
+// app/attractions/[id]/page.js
+"use client";
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+
+export default function page() {
+  const { id } = useParams();
+  const [attraction, setAttraction] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchAttraction() {
+      const res = await fetch(`/api/attractions/${id}`);
+      const data = await res.json();
+      if (res.ok) setAttraction(data);
+      setLoading(false);
+    }
+    fetchAttraction();
+  }, [id]);
+
+  if (loading) return <div>Loading...</div>;
+  if (!attraction) return <div>Not found.</div>;
+
+  return (
+    <div style={{ maxWidth: 900, margin: "40px auto", padding: "0 16px" }}>
+      <h1>{attraction.name}</h1>
+      <img src={attraction.coverimage} alt={attraction.name} className="img-hero" />
+      <p style={{ marginTop: 12 }}>{attraction.detail}</p>
+      <p>Latitude: {attraction.latitude}</p>
+      <p>Longitude: {attraction.longitude}</p>
+      <a href='/attractions'>Back</a>
+    </div>
+  );
+}
